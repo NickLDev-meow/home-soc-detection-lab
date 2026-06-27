@@ -67,8 +67,8 @@ emulate attack  →  endpoint telemetry (Sysmon / Windows Security)
 
 | Technique | ATT&CK | Tactic | How it was caught | Writeup |
 |---|---|---|---|---|
-| Encoded PowerShell | [T1059.001](https://attack.mitre.org/techniques/T1059/001/) | Execution | Sysmon EID 1 → Wazuh rule (base64 `-EncodedCommand`) | [incident-001](investigations/incident-001-encoded-powershell.md) |
-| Brute force | [T1110](https://attack.mitre.org/techniques/T1110/) | Credential Access | `netexec` SMB from Kali → Windows 4625 burst in the SIEM | [incident-002](investigations/incident-002-brute-force.md) |
+| Encoded PowerShell | [T1059.001](https://attack.mitre.org/techniques/T1059/001/) | Execution | Sysmon EID 1 → Wazuh rule (base64 `-EncodedCommand`) | [incident-001](incident-001-encoded-powershell.md) |
+| Brute force | [T1110](https://attack.mitre.org/techniques/T1110/) | Credential Access | `netexec` SMB from Kali → Windows 4625 burst in the SIEM | [incident-002](incident-002-brute-force.md) |
 
 
 ---
