@@ -1,6 +1,6 @@
 # INC-002 — SMB Brute Force Against Local Administrator on DC01
 
-**Classification:** Lab exercise (purple-team). A benign T1110 simulation: the analyst ran an authenticated SMB password-guessing attack from a lab Kali host against an owned, isolated Windows target to validate failed-logon detection.
+**Classification:** Lab exercise. A T1110 simulation: ran an authenticated SMB password-guessing attack from a lab Kali host against an owned, isolated Windows target to validate failed-logon detection.
 
 | | |
 |---|---|
@@ -17,7 +17,7 @@
 
 ## Summary
 
-A burst of failed-logon events (Event ID 4625) was generated on DC01 from a single source, `10.0.10.30`, all targeting the local `Administrator` account over SMB. The failure substatus (`0xC000006A` — bad password) confirms the account name is valid and the password was wrong on every attempt: a targeted password-guessing attack against a known privileged account. The activity was the expected result of a controlled `netexec` SMB brute force run from the lab Kali host.
+A burst of failed-logon events (Event ID 4625) was generated on DC01 from a single source, `10.0.10.30`, all targeting the local `Administrator` account over SMB. The failure substatus (`0xC000006A` — bad password) confirms the account name is valid and the password was wrong on every attempt: a targeted password-guessing attack against a known privileged account. The activity was the expected result of a controlled `netexec` SMB brute force run from the Kali host.
 
 ## Telemetry
 
@@ -29,7 +29,7 @@ A burst of failed-logon events (Event ID 4625) was generated on DC01 from a sing
 
 The attack produced a cluster of 4625 events in a short window, all sharing the same source IP and target account — the signature of a brute force.
 
-![Failed-logon (4625) event in Wazuh Discover showing the source IP, target account, and failure substatus](../screenshots/08-detection-bruteforce-4625.png)
+![Failed-logon (4625) event in Wazuh Discover showing the source IP, target account, and failure substatus](/screenshots/08-detection-bruteforce-4625.png)
 
 Key fields from a representative event:
 
@@ -44,8 +44,6 @@ Key fields from a representative event:
 
 ## Analysis
 
-### The substatus is the forensic clue
-Windows does not log the password that was attempted (by design). The investigative value is in **why** each logon failed — the `subStatus` code:
 
 | Substatus | Meaning | Signal |
 |---|---|---|
@@ -54,12 +52,12 @@ Windows does not log the password that was attempted (by design). The investigat
 | 0xC0000234 | Account **locked out** | Lockout policy engaged |
 | 0xC0000072 | Account **disabled** | |
 
-Every event here returned **0xC000006A** against `Administrator`. That distinguishes this from a spray of random usernames: the attacker is hammering a **known-good, privileged** account, which is the more dangerous case. Pairing: top-level `Status 0xC000006D` (logon failure) + `SubStatus 0xC000006A` (bad password) is the standard "valid user, wrong password" combination.
+Every event here returned **0xC000006A** against `Administrator`. That distinguishes this from a spray of random usernames: the attacker is hammering a **known-good, privileged** account.
 
 ### Scope
 - Single source IP (`10.0.10.30`), single target account (`Administrator`), `LogonType 3` (network/SMB), NTLM.
-- No successful logon (4624) from that source followed the failures → **no compromise**. (A spray-then-success — failures across many accounts followed by a 4624 from the same IP — would be the escalation to watch for; not observed here.)
-- Account-lockout policy was set generously for the lab, so the burst was not cut short.
+- No successful logon (4624) from that source followed the failures → **no compromise**.
+
 
 ## IOCs
 
@@ -76,9 +74,5 @@ None required — simulation, no successful authentication. For a real true posi
 ## Detection notes
 
 - Windows native 4625 logging + the Wazuh agent's Security-channel forwarding were sufficient to surface this with no custom rule. Wazuh's built-in authentication-failure rules also correlate repeated 4625s into a higher-severity alert.
-- Tuning opportunity for a real environment: alert on **N+ 4625 from one source IP in a short window** and separately on **one source IP failing against many distinct accounts** (spray), with highest priority on a spray window followed by a 4624 success.
 
-## References
-- Detection content: [detections/T1110-brute-force-spray.md](../detections/T1110-brute-force-spray.md)
-- Emulation: [emulation/T1110-brute-force-spray.md](../emulation/T1110-brute-force-spray.md)
-- Screenshot: [4625 event](../screenshots/08-detection-bruteforce-4625.png)
+
