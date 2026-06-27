@@ -80,6 +80,4 @@ Decision: alert retained, not suppressed. The file is benign, but the rule offer
 None. The encoded command was a controlled simulation; the temp file is known-good PowerShell behavior and is explicitly not an indicator.
 
 
-## References
-- Detection: [detections/T1059.001-encoded-powershell.md](/detections/T1059.001-encoded-powershell.md)
-- Screenshots: [detection event](/screenshots/04-detection-encoded-powershell.png), [alert correlation](/screenshots/05-investigation-correlation.png)
+
