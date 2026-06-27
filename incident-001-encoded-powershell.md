@@ -31,7 +31,7 @@ Rule 92057 (built-in), level 12, groups `sysmon, sysmon_eid1_detections, windows
 
 Triggering command (DC01):
 ```
-powershell -NoProfile -EncodedCommand <base64>
+powershell -NoProfile -EncodedCommand <dwBoAG8AYQBtAGkA>
 ```
 
 Verification: `rule.id:92057` returned 6 hits in Discover — one per test execution.
@@ -79,9 +79,6 @@ Decision: alert retained, not suppressed. The file is benign, but the rule offer
 
 None. The encoded command was a controlled simulation; the temp file is known-good PowerShell behavior and is explicitly not an indicator.
 
-## Containment / remediation
-
-Isolate the host, preserve the decoded command, hunt for child processes / network egress / persistence, and reset affected credentials.
 
 ## References
 - Detection: [detections/T1059.001-encoded-powershell.md](/detections/T1059.001-encoded-powershell.md)
